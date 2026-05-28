@@ -42,3 +42,13 @@ pytest
   "baseline_model_id": "gpt-4o-mini"
 }
 ```
+
+## Current MVP Features
+
+- `/analyze` supports token count
+- `/analyze` supports fertility
+- `/analyze` supports cost estimate
+- `/analyze` supports fairness score
+- `/analyze` supports estimated latency multiplier
+- Tokenizer caching is implemented
+- No database/frontend yet

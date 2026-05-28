@@ -27,54 +27,63 @@ def analyze_text(payload: AnalyzeRequest) -> AnalyzeResponse:
     if not payload.model_ids:
         raise HTTPException(status_code=400, detail="model_ids must contain at least one model id.")
 
+    if len(set(payload.model_ids)) != len(payload.model_ids):
+        raise HTTPException(status_code=400, detail="model_ids must not contain duplicates.")
+
     baseline_model_id = payload.baseline_model_id or DEFAULT_BASELINE_MODEL
 
-    model_ids_to_validate = set(payload.model_ids + [baseline_model_id])
     try:
-        for model_id in model_ids_to_validate:
-            get_model(model_id)
+        get_model(baseline_model_id)
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown baseline_model_id '{baseline_model_id}'.",
+        ) from exc
+
+    selected_models: dict[str, dict[str, object]] = {}
+    for model_id in payload.model_ids:
+        try:
+            selected_models[model_id] = get_model(model_id)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=f"Unknown model_id '{model_id}'.") from exc
 
     try:
         baseline_token_count = count_tokens(text, baseline_model_id)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except (RuntimeError, ValueError) as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
     analyses: list[ModelAnalysis] = []
     word_count = count_words(text)
     character_count_no_spaces = count_characters_no_spaces(text)
 
     for model_id in payload.model_ids:
+        model_info = selected_models[model_id]
+
         try:
-            model_info = get_model(model_id)
             token_count = count_tokens(text, model_id)
-        except ValueError as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except (RuntimeError, ValueError) as exc:
+            raise HTTPException(status_code=500, detail=str(exc)) from exc
 
         token_multiplier = calculate_token_multiplier(token_count, baseline_token_count)
-        attention_cost_multiplier = calculate_attention_cost_multiplier(token_multiplier)
-        fertility = calculate_fertility(token_count, word_count)
-        input_cost_estimate_usd = calculate_input_cost(
-            token_count,
-            model_info["input_price_per_million_tokens"],
-        )
-        fairness_score = calculate_fairness_score(token_multiplier)
+        estimated_attention_cost_multiplier = calculate_attention_cost_multiplier(token_multiplier)
 
         analyses.append(
             ModelAnalysis(
-                model_id=model_info["id"],
-                display_name=model_info["display_name"],
-                provider=model_info["provider"],
+                model_id=str(model_info["id"]),
+                display_name=str(model_info["display_name"]),
+                provider=str(model_info["provider"]),
                 token_count=token_count,
                 word_count=word_count,
                 character_count_no_spaces=character_count_no_spaces,
-                fertility=fertility,
+                fertility=calculate_fertility(token_count, word_count),
                 token_multiplier=token_multiplier,
-                estimated_attention_cost_multiplier=attention_cost_multiplier,
+                estimated_attention_cost_multiplier=estimated_attention_cost_multiplier,
                 estimated_latency_multiplier=token_multiplier,
-                input_cost_estimate_usd=input_cost_estimate_usd,
-                fairness_score=fairness_score,
+                input_cost_estimate_usd=calculate_input_cost(
+                    token_count,
+                    float(model_info["input_price_per_million_tokens"]),
+                ),
+                fairness_score=calculate_fairness_score(token_multiplier),
             )
         )
 
