@@ -1,0 +1,3 @@
+﻿PROJECT_NAME = "PolyglotBench"
+API_VERSION = "0.1.0"
+DEFAULT_BASELINE_MODEL = "gpt-4o-mini"

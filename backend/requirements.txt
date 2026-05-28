@@ -1,0 +1,8 @@
+﻿fastapi
+uvicorn[standard]
+pydantic
+pytest
+httpx
+tiktoken
+transformers
+tokenizers
