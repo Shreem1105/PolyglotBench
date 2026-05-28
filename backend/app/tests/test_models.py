@@ -35,3 +35,5 @@ def test_models_have_required_fields() -> None:
         assert "provider" in model
         assert "tokenizer_type" in model
         assert "tokenizer_name" in model
+        assert "input_price_per_million_tokens" in model
+        assert "notes" in model
