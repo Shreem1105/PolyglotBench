@@ -4,10 +4,11 @@
 PolyglotBench is a research-informed observatory that highlights tokenization-driven disparities across languages and scripts. Users submit text, select model/tokenizer targets, and receive comparative metrics focused on efficiency, cost, and fairness.
 
 ## 2. Backend Architecture
-- API layer: HTTP endpoints for health, model listing, single-text analysis, batch comparison, exports, and leaderboard retrieval
+- API layer: HTTP endpoints for health, model listing, single-text analysis, batch comparison, export delivery, and leaderboard retrieval
 - Tokenizer adapters: Pluggable service interfaces for model-specific tokenization behavior
 - Metrics engine: Deterministic computation module for token, cost, and fairness metrics
 - Analysis orchestration: `analysis_service.py` centralizes reusable per-text metric computation across routes
+- Export orchestration: `export_service.py` serializes analysis results to researcher-friendly CSV output
 - Domain schemas: Request/response contracts and typed metric payloads
 - Validation and config core: Shared configuration, constants, and validation rules
 
@@ -29,8 +30,8 @@ PolyglotBench is a research-informed observatory that highlights tokenization-dr
 - GET /models
 - POST /analyze
 - POST /compare (batch comparison endpoint for multiple text samples)
+- POST /export (returns JSON or CSV analysis output)
 - GET /leaderboard
-- POST /export
 
 ## 6. Data Flow
 User text input -> tokenizer adapters -> metrics engine -> cost/fairness calculation -> API response -> frontend visualizations

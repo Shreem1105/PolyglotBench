@@ -33,6 +33,7 @@ pytest
 - `GET /models`
 - `POST /analyze`
 - `POST /compare`
+- `POST /export`
 
 ## 6. Sample request for `/analyze`
 
@@ -58,6 +59,30 @@ pytest
   "baseline_model_id": "gpt-4o-mini"
 }
 ```
+
+## 8. Sample request for `/export` (JSON)
+
+```json
+{
+  "text": "Hello world. नमस्ते दुनिया.",
+  "model_ids": ["gpt-4o-mini", "gpt-4o"],
+  "baseline_model_id": "gpt-4o-mini",
+  "format": "json"
+}
+```
+
+## 9. Sample request for `/export` (CSV)
+
+```json
+{
+  "text": "Hello world. नमस्ते दुनिया.",
+  "model_ids": ["gpt-4o-mini", "gpt-4o"],
+  "baseline_model_id": "gpt-4o-mini",
+  "format": "csv"
+}
+```
+
+CSV export can be used by researchers for spreadsheet analysis workflows.
 
 ## Current MVP Features
 
