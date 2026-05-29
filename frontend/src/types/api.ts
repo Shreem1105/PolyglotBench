@@ -1,4 +1,4 @@
-export type ModelInfo = {
+﻿export type ModelInfo = {
   id: string;
   display_name: string;
   provider: string;
@@ -22,6 +22,7 @@ export type ModelAnalysis = {
   model_id: string;
   display_name: string;
   provider: string;
+  language_detected: string;
   token_count: number;
   word_count: number;
   character_count_no_spaces: number;
@@ -37,4 +38,17 @@ export type AnalyzeResponse = {
   baseline_model_id: string;
   text_preview: string;
   analyses: ModelAnalysis[];
+};
+
+export type LeaderboardRow = {
+  rank: number;
+  model_id: string;
+  average_fairness_score: number;
+};
+
+export type LeaderboardResponse = {
+  languages: string[];
+  models: string[];
+  baseline_model_id?: string;
+  leaderboard: LeaderboardRow[];
 };

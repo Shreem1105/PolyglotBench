@@ -1,14 +1,15 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 
-import { analyzeText, getModels } from "./api/client";
+import { analyzeText, getLeaderboard, getModels } from "./api/client";
+import LeaderboardTable from "./components/LeaderboardTable";
 import MetricCard from "./components/MetricCard";
 import MetricExplainer from "./components/MetricExplainer";
 import ModelSelector from "./components/ModelSelector";
 import ResultsCharts from "./components/ResultsCharts";
 import ResultsTable from "./components/ResultsTable";
 import TextInputPanel from "./components/TextInputPanel";
-import type { AnalyzeResponse, ModelInfo } from "./types/api";
+import type { AnalyzeResponse, LeaderboardResponse, ModelInfo } from "./types/api";
 
 const DEFAULT_MODEL = "gpt-4o-mini";
 
@@ -33,6 +34,11 @@ export default function App() {
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalyzeResponse | null>(null);
+
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [leaderboardLoading, setLeaderboardLoading] = useState(false);
+  const [leaderboardError, setLeaderboardError] = useState<string | null>(null);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardResponse | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -102,6 +108,24 @@ export default function App() {
     }
   }
 
+  async function handleLoadLeaderboard() {
+    setShowLeaderboard(true);
+    setLeaderboardLoading(true);
+    setLeaderboardError(null);
+
+    try {
+      const response = await getLeaderboard();
+      setLeaderboard(response);
+    } catch (error) {
+      setLeaderboardError(
+        error instanceof Error ? error.message : "Failed to load leaderboard."
+      );
+      setLeaderboard(null);
+    } finally {
+      setLeaderboardLoading(false);
+    }
+  }
+
   const summary = useMemo(() => {
     if (!result || result.analyses.length === 0) {
       return null;
@@ -115,6 +139,7 @@ export default function App() {
       baseline: result.baseline_model_id,
       lowestFairness: Math.min(...fairnessValues),
       highestMultiplier: Math.max(...multiplierValues),
+      languageDetected: result.analyses[0]?.language_detected ?? "unknown",
     };
   }, [result]);
 
@@ -166,7 +191,18 @@ export default function App() {
           >
             {analyzing ? "Analyzing..." : "Analyze Text"}
           </button>
+          <button
+            className="leaderboard-button"
+            type="button"
+            disabled={modelsLoading || leaderboardLoading}
+            onClick={handleLoadLeaderboard}
+          >
+            {leaderboardLoading ? "Loading Leaderboard..." : "View Fairness Leaderboard"}
+          </button>
           {analyzeError && <div className="status-banner error">{analyzeError}</div>}
+          {leaderboardError && (
+            <div className="status-banner error">{leaderboardError}</div>
+          )}
         </form>
 
         <section className="results-panel">
@@ -198,6 +234,9 @@ export default function App() {
           {result && (
             <section className="results-block">
               <h3>Visual Comparisons</h3>
+              <div className="language-badge">
+                Language Detected: <strong>{summary?.languageDetected ?? "unknown"}</strong>
+              </div>
               <ResultsCharts analyses={result.analyses} />
             </section>
           )}
@@ -206,6 +245,23 @@ export default function App() {
             <section className="results-block">
               <h3>Detailed Metrics Table</h3>
               <ResultsTable analyses={result.analyses} />
+            </section>
+          )}
+
+          {showLeaderboard && (
+            <section className="results-block">
+              <h3>Fairness Leaderboard</h3>
+              {leaderboardLoading && (
+                <p className="panel-hint">Computing leaderboard from multilingual benchmarks...</p>
+              )}
+              {leaderboard && (
+                <>
+                  <p className="panel-hint leaderboard-meta">
+                    Languages benchmarked: {leaderboard.languages.join(", ")}
+                  </p>
+                  <LeaderboardTable rows={leaderboard.leaderboard} />
+                </>
+              )}
             </section>
           )}
         </section>

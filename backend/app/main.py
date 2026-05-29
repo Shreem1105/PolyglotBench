@@ -4,6 +4,7 @@ from app.api.routes_analyze import router as analyze_router
 from app.api.routes_compare import router as compare_router
 from app.api.routes_export import router as export_router
 from app.api.routes_health import router as health_router
+from app.api.routes_leaderboard import router as leaderboard_router
 from app.api.routes_models import router as models_router
 
 app = FastAPI(
@@ -17,6 +18,7 @@ app.include_router(models_router)
 app.include_router(analyze_router)
 app.include_router(compare_router)
 app.include_router(export_router)
+app.include_router(leaderboard_router)
 
 
 @app.get("/")

@@ -391,3 +391,71 @@ select {
     height: 260px;
   }
 }
+
+.leaderboard-button {
+  border: 1px solid #345079;
+  border-radius: 11px;
+  background: #f1f5ff;
+  color: #1d3457;
+  padding: 0.72rem 1rem;
+  font-size: 0.98rem;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.leaderboard-button:hover:not(:disabled) {
+  background: #e3ebff;
+  transform: translateY(-1px);
+}
+
+.leaderboard-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.language-badge {
+  margin-top: 0.3rem;
+  margin-bottom: 0.7rem;
+  display: inline-block;
+  border: 1px solid #b8d3c7;
+  background: #edf8f2;
+  color: #1f4e3e;
+  padding: 0.35rem 0.62rem;
+  border-radius: 999px;
+  font-family: "Trebuchet MS", sans-serif;
+  font-size: 0.88rem;
+}
+
+.leaderboard-meta {
+  margin-bottom: 0.6rem;
+}
+
+.leaderboard-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 420px;
+  background: #ffffff;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  border-bottom: 1px solid #dfe7ee;
+  text-align: left;
+  padding: 0.58rem 0.52rem;
+  font-size: 0.9rem;
+}
+
+.leaderboard-table th {
+  background: #eaf3f9;
+  color: #27485d;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 700;
+}

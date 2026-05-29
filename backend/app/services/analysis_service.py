@@ -1,5 +1,6 @@
 ﻿from app.core.model_registry import get_model
 from app.schemas.analyze import ModelAnalysis
+from app.services.language_service import detect_language
 from app.services.metrics_service import (
     calculate_attention_cost_multiplier,
     calculate_fairness_score,
@@ -32,6 +33,7 @@ def analyze_text_against_models(
     baseline_token_count = count_tokens(text, baseline_model_id)
 
     analyses: list[ModelAnalysis] = []
+    language_detected = detect_language(text)
     word_count = count_words(text)
     character_count_no_spaces = count_characters_no_spaces(text)
 
@@ -40,13 +42,16 @@ def analyze_text_against_models(
         token_count = count_tokens(text, model_id)
 
         token_multiplier = calculate_token_multiplier(token_count, baseline_token_count)
-        estimated_attention_cost_multiplier = calculate_attention_cost_multiplier(token_multiplier)
+        estimated_attention_cost_multiplier = calculate_attention_cost_multiplier(
+            token_multiplier
+        )
 
         analyses.append(
             ModelAnalysis(
                 model_id=str(model_info["id"]),
                 display_name=str(model_info["display_name"]),
                 provider=str(model_info["provider"]),
+                language_detected=language_detected,
                 token_count=token_count,
                 word_count=word_count,
                 character_count_no_spaces=character_count_no_spaces,

@@ -43,6 +43,11 @@ For the MVP, latency is initially estimated from token inflation patterns and co
 - estimated latency visualization
 - example multilingual inputs
 
+## Observatory Features
+- automatic language detection for analyzed text
+- fairness leaderboard generation from multilingual benchmark comparison
+- researcher-friendly multilingual benchmark comparison across available models
+
 ## Run Locally
 
 ### Backend (FastAPI)

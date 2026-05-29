@@ -24,6 +24,7 @@ class ModelAnalysis(BaseModel):
     model_id: str
     display_name: str
     provider: str
+    language_detected: str
     token_count: int
     word_count: int
     character_count_no_spaces: int
