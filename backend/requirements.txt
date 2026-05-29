@@ -9,3 +9,4 @@ transformers
 tokenizers
 langdetect
 sqlalchemy
+psycopg2-binary

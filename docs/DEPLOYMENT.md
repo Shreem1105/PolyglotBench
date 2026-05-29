@@ -37,6 +37,8 @@ Services:
 The backend container stores SQLite data in `./backend/data` using:
 `DATABASE_URL=sqlite:///./data/polyglotbench.db`
 
+An optional `postgres` service is also included for production-style testing.
+
 ## Environment Variables
 
 | Variable | Default | Purpose |
@@ -48,6 +50,12 @@ The backend container stores SQLite data in `./backend/data` using:
 | `VITE_API_BASE_URL` | `http://localhost:8000` | Frontend API base URL. |
 
 `CORS_ORIGINS` is parsed as a comma-separated list. In production, add your deployed frontend domain(s) to this value.
+
+`DATABASE_URL` examples:
+- `sqlite:///./polyglotbench.db`
+- `postgresql+psycopg2://user:password@host:5432/polyglotbench`
+
+Never commit real database credentials to source control.
 
 ## Production Overview
 
@@ -62,6 +70,13 @@ Recommended split deployment:
 - Set `DATABASE_URL` and `CORS_ORIGINS` environment variables
 - Mount persistent storage if using SQLite in container environments
 - Use `GET /ready` for readiness checks in platform health probes
+
+## PostgreSQL Deployment Notes
+
+- Use managed PostgreSQL for production reliability and concurrency.
+- Set `DATABASE_URL` to a PostgreSQL URL (`postgresql+psycopg2://...`).
+- Keep credentials in platform secret managers, not in `.env.example` or committed compose files.
+- Current schema setup uses `create_all`; add Alembic before critical production migration workflows.
 
 ## Frontend Deployment Notes (Vercel/Netlify style)
 

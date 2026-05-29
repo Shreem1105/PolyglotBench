@@ -55,11 +55,13 @@ docker compose up --build
 
 ## Deployment Docs
 - See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for local, Docker, and production deployment guidance.
+- See [docs/DATABASE.md](docs/DATABASE.md) for SQLite/PostgreSQL database configuration details.
 
 ## Backend Operations
 - `GET /health` for liveness checks.
 - `GET /ready` for readiness checks with database connectivity verification.
 - CORS support is enabled for frontend dev origins (configurable via `CORS_ORIGINS`).
+- SQLite is the default local database; production can use PostgreSQL by setting `DATABASE_URL`.
 
 ## Frontend Features
 - model selector
