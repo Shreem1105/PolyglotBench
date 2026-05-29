@@ -34,6 +34,15 @@ This project is inspired by the paper "The Script Tax: Measuring Tokenization-Dr
 ## 7. Latency Note
 For the MVP, latency is initially estimated from token inflation patterns and complexity proxies, not measured from live end-to-end model inference.
 
+## Frontend Features
+- model selector
+- baseline selector
+- token count table
+- token multiplier chart
+- fairness score chart
+- estimated latency visualization
+- example multilingual inputs
+
 ## Run Locally
 
 ### Backend (FastAPI)

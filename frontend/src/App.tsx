@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 
 import { analyzeText, getModels } from "./api/client";
 import MetricCard from "./components/MetricCard";
+import MetricExplainer from "./components/MetricExplainer";
 import ModelSelector from "./components/ModelSelector";
+import ResultsCharts from "./components/ResultsCharts";
 import ResultsTable from "./components/ResultsTable";
 import TextInputPanel from "./components/TextInputPanel";
 import type { AnalyzeResponse, ModelInfo } from "./types/api";
@@ -22,7 +24,9 @@ export default function App() {
   const [modelsLoading, setModelsLoading] = useState(true);
   const [modelsError, setModelsError] = useState<string | null>(null);
 
-  const [text, setText] = useState("Hello world. नमस्ते दुनिया। こんにちは世界。");
+  const [text, setText] = useState(
+    "Artificial intelligence is changing how people build software."
+  );
   const [selectedModelIds, setSelectedModelIds] = useState<string[]>([]);
   const [baselineModelId, setBaselineModelId] = useState("");
 
@@ -49,7 +53,9 @@ export default function App() {
         setBaselineModelId(defaultModel);
       } catch (error) {
         if (!cancelled) {
-          setModelsError(error instanceof Error ? error.message : "Failed to fetch models.");
+          setModelsError(
+            error instanceof Error ? error.message : "Failed to fetch models."
+          );
         }
       } finally {
         if (!cancelled) {
@@ -87,7 +93,9 @@ export default function App() {
       });
       setResult(response);
     } catch (error) {
-      setAnalyzeError(error instanceof Error ? error.message : "Analyze request failed.");
+      setAnalyzeError(
+        error instanceof Error ? error.message : "Analyze request failed."
+      );
       setResult(null);
     } finally {
       setAnalyzing(false);
@@ -116,16 +124,27 @@ export default function App() {
         <h1>PolyglotBench</h1>
         <p className="hero-subtitle">Live Tokenization Fairness Observatory</p>
         <p className="hero-description">
-          Compare multilingual text across model tokenizers to estimate token inflation, cost, latency, and fairness disparities.
+          Compare multilingual text across model tokenizers to estimate token inflation,
+          cost, latency, and fairness disparities.
         </p>
       </header>
 
-      {modelsLoading && <div className="status-banner">Loading models from backend...</div>}
-      {modelsError && <div className="status-banner error">Backend connection error: {modelsError}</div>}
+      {modelsLoading && (
+        <div className="status-banner">Loading models from backend...</div>
+      )}
+      {modelsError && (
+        <div className="status-banner error">
+          Backend connection error: {modelsError}
+        </div>
+      )}
 
       <main className="layout">
         <form className="control-stack" onSubmit={handleAnalyze}>
-          <TextInputPanel text={text} onTextChange={setText} disabled={modelsLoading || analyzing} />
+          <TextInputPanel
+            text={text}
+            onTextChange={setText}
+            disabled={modelsLoading || analyzing}
+          />
           <ModelSelector
             models={models}
             selectedModelIds={selectedModelIds}
@@ -134,10 +153,16 @@ export default function App() {
             onBaselineChange={setBaselineModelId}
             disabled={modelsLoading || analyzing}
           />
+          <MetricExplainer />
           <button
             className="analyze-button"
             type="submit"
-            disabled={modelsLoading || analyzing || models.length === 0}
+            disabled={
+              modelsLoading ||
+              analyzing ||
+              models.length === 0 ||
+              selectedModelIds.length === 0
+            }
           >
             {analyzing ? "Analyzing..." : "Analyze Text"}
           </button>
@@ -146,18 +171,43 @@ export default function App() {
 
         <section className="results-panel">
           <h2>Results</h2>
-          {!result && <p className="panel-hint">Run analysis to view model-by-model tokenization metrics.</p>}
-
-          {summary && (
-            <div className="metric-grid">
-              <MetricCard label="Models analyzed" value={String(summary.modelCount)} />
-              <MetricCard label="Baseline model" value={summary.baseline} />
-              <MetricCard label="Lowest fairness score" value={`${summary.lowestFairness.toFixed(2)} / 100`} />
-              <MetricCard label="Highest token multiplier" value={`${summary.highestMultiplier.toFixed(2)}×`} />
-            </div>
+          {!result && (
+            <p className="panel-hint">
+              Run analysis to view model-by-model tokenization metrics.
+            </p>
           )}
 
-          {result && <ResultsTable analyses={result.analyses} />}
+          {summary && (
+            <section className="results-block">
+              <h3>Summary Metrics</h3>
+              <div className="metric-grid">
+                <MetricCard label="Models analyzed" value={String(summary.modelCount)} />
+                <MetricCard label="Baseline model" value={summary.baseline} />
+                <MetricCard
+                  label="Lowest fairness score"
+                  value={`${summary.lowestFairness.toFixed(2)} / 100`}
+                />
+                <MetricCard
+                  label="Highest token multiplier"
+                  value={`${summary.highestMultiplier.toFixed(2)}x`}
+                />
+              </div>
+            </section>
+          )}
+
+          {result && (
+            <section className="results-block">
+              <h3>Visual Comparisons</h3>
+              <ResultsCharts analyses={result.analyses} />
+            </section>
+          )}
+
+          {result && (
+            <section className="results-block">
+              <h3>Detailed Metrics Table</h3>
+              <ResultsTable analyses={result.analyses} />
+            </section>
+          )}
         </section>
       </main>
     </div>

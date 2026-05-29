@@ -1,11 +1,11 @@
-import type { ModelAnalysis } from "../types/api";
+﻿import type { ModelAnalysis } from "../types/api";
 
 type ResultsTableProps = {
   analyses: ModelAnalysis[];
 };
 
 function formatMultiplier(value: number): string {
-  return `${value.toFixed(2)}×`;
+  return `${value.toFixed(2)}x`;
 }
 
 function formatCost(value: number): string {
