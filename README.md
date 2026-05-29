@@ -9,6 +9,13 @@
 ![PostgreSQL-ready](https://img.shields.io/badge/Database-PostgreSQL--ready-336791?logo=postgresql&logoColor=white)
 ![Research-inspired](https://img.shields.io/badge/Research-Inspired-6A1B9A)
 
+## Live Demo
+
+- [Launch PolyglotBench](https://polyglot-bench.vercel.app)
+- [Open FastAPI Docs](https://polyglotbench-api.onrender.com/docs)
+
+Use the frontend link for the interactive dashboard and the FastAPI docs link for direct API testing.
+
 ## Research Motivation
 Multilingual language models are often treated as if they are script- and language-neutral.  
 In practice, tokenizer behavior can inflate sequence length for some scripts compared with others.  
