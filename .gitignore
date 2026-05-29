@@ -51,6 +51,13 @@ release/
 tmp/
 *.cache
 
+# Databases
+backend/polyglotbench.db
+backend/test_polyglotbench.db
+*.db
+*.sqlite
+*.sqlite3
+
 # IDE / Editor
 .vscode/
 .idea/

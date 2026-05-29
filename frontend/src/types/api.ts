@@ -52,3 +52,18 @@ export type LeaderboardResponse = {
   baseline_model_id?: string;
   leaderboard: LeaderboardRow[];
 };
+
+export type SubmissionResponse = {
+  id: number;
+  text_preview: string;
+  language_detected: string;
+  selected_models: string[];
+  baseline_model_id: string;
+  min_fairness_score: number;
+  max_token_multiplier: number;
+  created_at: string;
+};
+
+export type SubmissionsResponse = {
+  submissions: SubmissionResponse[];
+};

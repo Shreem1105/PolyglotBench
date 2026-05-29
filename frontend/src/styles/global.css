@@ -459,3 +459,61 @@ select {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 700;
 }
+
+.status-banner.success {
+  border-color: #73b488;
+  color: #1e5b2f;
+  background: #eaf8ee;
+}
+
+.save-analysis-button {
+  margin-top: 0.7rem;
+  border: 1px solid #3f6f44;
+  border-radius: 10px;
+  background: #ebf7ed;
+  color: #245b2a;
+  padding: 0.66rem 0.9rem;
+  font-size: 0.94rem;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.save-analysis-button:hover:not(:disabled) {
+  background: #ddf0e2;
+  transform: translateY(-1px);
+}
+
+.save-analysis-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.submissions-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.submissions-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 880px;
+  background: #ffffff;
+}
+
+.submissions-table th,
+.submissions-table td {
+  border-bottom: 1px solid #dfe7ee;
+  text-align: left;
+  padding: 0.58rem 0.52rem;
+  font-size: 0.9rem;
+}
+
+.submissions-table th {
+  background: #eaf3f9;
+  color: #27485d;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 700;
+}

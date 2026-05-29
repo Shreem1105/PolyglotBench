@@ -3,6 +3,8 @@
   AnalyzeResponse,
   LeaderboardResponse,
   ModelsResponse,
+  SubmissionResponse,
+  SubmissionsResponse,
 } from "../types/api";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
@@ -43,4 +45,17 @@ export function analyzeText(payload: AnalyzeRequest): Promise<AnalyzeResponse> {
 
 export function getLeaderboard(): Promise<LeaderboardResponse> {
   return request<LeaderboardResponse>("/leaderboard");
+}
+
+export function saveSubmissionFromAnalysis(
+  payload: AnalyzeRequest
+): Promise<SubmissionResponse> {
+  return request<SubmissionResponse>("/submissions/from-analysis", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function getSubmissions(limit = 20): Promise<SubmissionsResponse> {
+  return request<SubmissionsResponse>(`/submissions?limit=${limit}`);
 }

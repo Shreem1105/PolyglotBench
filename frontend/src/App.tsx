@@ -1,13 +1,19 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 
-import { analyzeText, getLeaderboard, getModels } from "./api/client";
+import {
+  analyzeText,
+  getLeaderboard,
+  getModels,
+  saveSubmissionFromAnalysis,
+} from "./api/client";
 import LeaderboardTable from "./components/LeaderboardTable";
 import MetricCard from "./components/MetricCard";
 import MetricExplainer from "./components/MetricExplainer";
 import ModelSelector from "./components/ModelSelector";
 import ResultsCharts from "./components/ResultsCharts";
 import ResultsTable from "./components/ResultsTable";
+import SubmissionsPanel from "./components/SubmissionsPanel";
 import TextInputPanel from "./components/TextInputPanel";
 import type { AnalyzeResponse, LeaderboardResponse, ModelInfo } from "./types/api";
 
@@ -34,6 +40,11 @@ export default function App() {
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalyzeResponse | null>(null);
+
+  const [savingSubmission, setSavingSubmission] = useState(false);
+  const [submissionSuccess, setSubmissionSuccess] = useState<string | null>(null);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [submissionsRefreshKey, setSubmissionsRefreshKey] = useState(0);
 
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
@@ -90,6 +101,8 @@ export default function App() {
 
     setAnalyzing(true);
     setAnalyzeError(null);
+    setSubmissionSuccess(null);
+    setSubmissionError(null);
 
     try {
       const response = await analyzeText({
@@ -105,6 +118,28 @@ export default function App() {
       setResult(null);
     } finally {
       setAnalyzing(false);
+    }
+  }
+
+  async function handleSaveAnalysis() {
+    setSavingSubmission(true);
+    setSubmissionSuccess(null);
+    setSubmissionError(null);
+
+    try {
+      const response = await saveSubmissionFromAnalysis({
+        text,
+        model_ids: selectedModelIds,
+        baseline_model_id: baselineModelId || null,
+      });
+      setSubmissionSuccess(`Saved submission #${response.id}`);
+      setSubmissionsRefreshKey((current) => current + 1);
+    } catch (error) {
+      setSubmissionError(
+        error instanceof Error ? error.message : "Failed to save submission."
+      );
+    } finally {
+      setSavingSubmission(false);
     }
   }
 
@@ -168,7 +203,7 @@ export default function App() {
           <TextInputPanel
             text={text}
             onTextChange={setText}
-            disabled={modelsLoading || analyzing}
+            disabled={modelsLoading || analyzing || savingSubmission}
           />
           <ModelSelector
             models={models}
@@ -176,7 +211,7 @@ export default function App() {
             baselineModelId={baselineModelId}
             onToggleModel={toggleModel}
             onBaselineChange={setBaselineModelId}
-            disabled={modelsLoading || analyzing}
+            disabled={modelsLoading || analyzing || savingSubmission}
           />
           <MetricExplainer />
           <button
@@ -228,6 +263,20 @@ export default function App() {
                   value={`${summary.highestMultiplier.toFixed(2)}x`}
                 />
               </div>
+              <button
+                type="button"
+                className="save-analysis-button"
+                disabled={savingSubmission || analyzing}
+                onClick={handleSaveAnalysis}
+              >
+                {savingSubmission ? "Saving..." : "Save this analysis"}
+              </button>
+              {submissionSuccess && (
+                <div className="status-banner success">{submissionSuccess}</div>
+              )}
+              {submissionError && (
+                <div className="status-banner error">{submissionError}</div>
+              )}
             </section>
           )}
 
@@ -264,6 +313,11 @@ export default function App() {
               )}
             </section>
           )}
+
+          <section className="results-block">
+            <h3>Recent Community Analyses</h3>
+            <SubmissionsPanel refreshKey={submissionsRefreshKey} />
+          </section>
         </section>
       </main>
     </div>

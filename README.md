@@ -17,9 +17,9 @@ This project is inspired by the paper "The Script Tax: Measuring Tokenization-Dr
 - Exportable analysis results for reporting and reproducibility
 
 ## 5. Planned Tech Stack
-- Backend: Python, FastAPI, Pydantic
+- Backend: Python, FastAPI, Pydantic, SQLAlchemy
 - Frontend: React + TypeScript + Vite
-- Data/Storage: Lightweight file-based snapshots initially; database later
+- Data/Storage: SQLite in local development; PostgreSQL planned for future deployment
 - Visualization: Charting library for comparative metrics dashboards
 - Deployment: Containerized services (planned)
 
@@ -29,7 +29,7 @@ This project is inspired by the paper "The Script Tax: Measuring Tokenization-Dr
 3. Add core API endpoints for analysis and comparison
 4. Build frontend views for input, result tables, and visualizations
 5. Add export and leaderboard workflows
-6. Validate metrics against research examples and refine fairness scoring
+6. Add saved submission workflows and prepare for future community benchmarks
 
 ## 7. Latency Note
 For the MVP, latency is initially estimated from token inflation patterns and complexity proxies, not measured from live end-to-end model inference.
@@ -42,11 +42,15 @@ For the MVP, latency is initially estimated from token inflation patterns and co
 - fairness score chart
 - estimated latency visualization
 - example multilingual inputs
+- recent community analyses panel
+- save analysis submission action
 
 ## Observatory Features
 - automatic language detection for analyzed text
 - fairness leaderboard generation from multilingual benchmark comparison
-- researcher-friendly multilingual benchmark comparison across available models
+- saved analysis submissions backed by local SQLite
+- database files ignored by Git in local development
+- future PostgreSQL support planned
 
 ## Run Locally
 
