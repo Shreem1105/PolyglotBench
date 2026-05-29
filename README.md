@@ -48,12 +48,30 @@ This project turns that research direction into a deployed interactive tool wher
 - Dockerized backend/frontend
 - SQLite default and PostgreSQL-ready config
 
-## Demo Screenshots
-![Dashboard Placeholder](docs/assets/dashboard-placeholder.png)
-![Charts Placeholder](docs/assets/charts-placeholder.png)
-![Leaderboard Placeholder](docs/assets/leaderboard-placeholder.png)
+## Interactive Dashboard
+![Interactive Dashboard](docs/assets/dashboard-overview.png)
 
-Screenshot guidance: [docs/assets/README.md](docs/assets/README.md)
+PolyglotBench provides an interactive observatory for exploring tokenization fairness across multilingual language models.
+
+## Hindi Analysis Example
+![Hindi Analysis Example](docs/assets/hindi-analysis.png)
+
+This Hindi run highlights how token inflation can increase token multipliers and attention-cost proxies, which lowers fairness scores relative to the selected baseline model.
+
+## Arabic Analysis Example
+![Arabic Analysis Example](docs/assets/arabic-analysis.png)
+
+This Arabic analysis view shows side-by-side fairness comparisons across tokenizer choices, making script-level efficiency differences easy to inspect.
+
+## Community Leaderboard and Saved Analyses
+![Community Leaderboard and Saved Analyses](docs/assets/leaderboard.png)
+
+Leaderboard rankings summarize model fairness across benchmark samples, while saved community analyses capture recent runs for shared tracking and comparison.
+
+## FastAPI Backend Documentation
+![FastAPI Backend Documentation](docs/assets/api-docs.png)
+
+The backend docs expose REST endpoints for single-text analysis, multi-text comparison, export workflows, leaderboard retrieval, and saved-submission access.
 
 ## Architecture Overview
 ```text
