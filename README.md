@@ -1,89 +1,85 @@
 # PolyglotBench
 
-## 1. Project Title
-PolyglotBench
+**A live tokenization fairness observatory for multilingual LLMs.**
 
-## 2. Short Description
-PolyglotBench is a live tokenization fairness observatory for comparing how multilingual text is segmented across language models and tokenizer families.
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-Frontend-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)
+![PostgreSQL-ready](https://img.shields.io/badge/Database-PostgreSQL--ready-336791?logo=postgresql&logoColor=white)
+![Research-inspired](https://img.shields.io/badge/Research-Inspired-6A1B9A)
 
-## 3. Research Motivation
-This project is inspired by the paper "The Script Tax: Measuring Tokenization-Driven Efficiency and Latency Disparities in Multilingual Language Models." Different scripts can incur higher token counts for equivalent meaning, leading to cost and performance disparities. PolyglotBench is designed to make those disparities visible, measurable, and discussable.
+## Research Motivation
+Multilingual language models are often treated as if they are script- and language-neutral.  
+In practice, tokenizer behavior can inflate sequence length for some scripts compared with others.  
+That inflation can create downstream disparities in cost, latency proxies, and accessibility.  
+PolyglotBench turns this research direction into an interactive observatory for measuring and communicating these differences.
 
-## 4. Planned Features
-- Multi-model tokenizer comparison for the same input text
-- Per-language/script token inflation and fertility analysis
-- Estimated cost and latency impact projections
-- Fairness leaderboard across languages and scripts
-- Exportable analysis results for reporting and reproducibility
+## Key Features
+- Real-time tokenizer comparison
+- Fertility calculation
+- Token multiplier
+- Estimated latency multiplier
+- Estimated attention-cost multiplier
+- Fairness score
+- Multilingual language detection
+- Fairness leaderboard
+- Saved community analyses
+- CSV/JSON export
+- Dockerized backend/frontend
+- SQLite default and PostgreSQL-ready config
 
-## 5. Planned Tech Stack
-- Backend: Python, FastAPI, Pydantic, SQLAlchemy
-- Frontend: React + TypeScript + Vite
-- Data/Storage: SQLite in local development; PostgreSQL planned for future deployment
-- Visualization: Charting library for comparative metrics dashboards
-- Deployment: Containerized services (planned)
+## Demo Screenshots
+![Dashboard Placeholder](docs/assets/dashboard-placeholder.png)
+![Charts Placeholder](docs/assets/charts-placeholder.png)
+![Leaderboard Placeholder](docs/assets/leaderboard-placeholder.png)
 
-## 6. MVP Roadmap
-1. Scaffold backend/frontend architecture and documentation
-2. Implement tokenizer adapter layer and baseline metrics engine
-3. Add core API endpoints for analysis and comparison
-4. Build frontend views for input, result tables, and visualizations
-5. Add export and leaderboard workflows
-6. Add saved submission workflows and prepare for future community benchmarks
+Screenshot guidance: [docs/assets/README.md](docs/assets/README.md)
 
-## 7. Latency Note
-For the MVP, latency is initially estimated from token inflation patterns and complexity proxies, not measured from live end-to-end model inference.
-
-## Environment Setup
-
-### Backend env
-- Copy `backend/.env.example` if you want custom local values.
-- Runtime config is environment-based (`ENVIRONMENT`, `DATABASE_URL`, `DEFAULT_BASELINE_MODEL`, `CORS_ORIGINS`).
-- `DATABASE_URL` defaults to `sqlite:///./polyglotbench.db`.
-
-### Frontend env
-- `frontend/.env.example` includes `VITE_API_BASE_URL=http://localhost:8000`.
-
-## Docker Quickstart
-
-```powershell
-docker compose up --build
+## Architecture Overview
+```text
+User Text
+   ↓
+React Dashboard
+   ↓
+FastAPI Backend
+   ↓
+Tokenizer + Metrics Services
+   ↓
+SQLite/PostgreSQL
+   ↓
+Charts, Exports, Leaderboard
 ```
 
-- Backend: `http://localhost:8000`
-- Frontend: `http://localhost:5173`
+## Tech Stack
+### Backend
+- FastAPI
+- Pydantic
+- SQLAlchemy
+- SQLite/PostgreSQL
+- tiktoken
+- Hugging Face Transformers
 
-## Deployment Docs
-- See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for local, Docker, and production deployment guidance.
-- See [docs/DATABASE.md](docs/DATABASE.md) for SQLite/PostgreSQL database configuration details.
+### Frontend
+- React
+- TypeScript
+- Vite
+- Recharts
 
-## Backend Operations
-- `GET /health` for liveness checks.
-- `GET /ready` for readiness checks with database connectivity verification.
-- CORS support is enabled for frontend dev origins (configurable via `CORS_ORIGINS`).
-- SQLite is the default local database; production can use PostgreSQL by setting `DATABASE_URL`.
+### DevOps
+- Docker
+- Docker Compose
 
-## Frontend Features
-- model selector
-- baseline selector
-- token count table
-- token multiplier chart
-- fairness score chart
-- estimated latency visualization
-- example multilingual inputs
-- recent community analyses panel
-- save analysis submission action
+## Metrics
+- `token_count`: number of tokenizer-produced tokens for a given model.
+- `fertility`: tokens per word (`token_count / word_count`).
+- `token_multiplier`: token count relative to baseline model.
+- `estimated_attention_cost_multiplier`: squared token multiplier (`token_multiplier^2`).
+- `estimated_latency_multiplier`: current proxy equal to token multiplier.
+- `fairness_score`: normalized 0-100 score where lower token inflation yields higher fairness.
 
-## Observatory Features
-- automatic language detection for analyzed text
-- fairness leaderboard generation from multilingual benchmark comparison
-- saved analysis submissions backed by local SQLite
-- database files ignored by Git in local development
-- future PostgreSQL support planned
-
-## Run Locally
-
-### Backend (FastAPI)
+## Quickstart
+### Backend
 ```powershell
 cd backend
 python -m venv .venv
@@ -92,12 +88,91 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-### Frontend (React + Vite)
+### Frontend
 ```powershell
 cd frontend
 npm install
 npm run dev
 ```
 
-- Backend default URL: `http://localhost:8000`
-- Frontend runs on Vite's default local dev port (typically `http://localhost:5173`)
+## Docker Quickstart
+```powershell
+docker compose up --build
+```
+
+## API Endpoints
+- `GET /`
+- `GET /health`
+- `GET /ready`
+- `GET /models`
+- `POST /analyze`
+- `POST /compare`
+- `POST /export`
+- `GET /leaderboard`
+- `POST /submissions/from-analysis`
+- `GET /submissions`
+
+## Example API Request
+```bash
+curl -X POST "http://localhost:8000/analyze" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Artificial intelligence is changing how people build software.",
+    "model_ids": ["gpt-4o-mini", "gpt-4o", "xlm-roberta-base"],
+    "baseline_model_id": "gpt-4o-mini"
+  }'
+```
+
+## Repository Structure
+```text
+polyglotbench/
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   ├── core/
+│   │   ├── db/
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   └── tests/
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── README.md
+├── frontend/
+│   ├── src/
+│   ├── Dockerfile
+│   └── nginx.conf
+├── docs/
+│   ├── ARCHITECTURE.md
+│   ├── API_EXAMPLES.md
+│   ├── DATABASE.md
+│   ├── DEMO_SCRIPT.md
+│   └── DEPLOYMENT.md
+├── research/
+├── docker-compose.yml
+└── README.md
+```
+
+## Development Status
+MVP complete. Deployment and production hardening in progress.
+
+## Roadmap
+- public deployment
+- PDF reports
+- Alembic migrations
+- richer tokenizer registry
+- larger curated multilingual benchmark
+- admin-reviewed public leaderboard
+- real latency benchmarking
+
+## Research Attribution
+This project is inspired by the Script Tax research direction on tokenization-driven disparities in multilingual language models.
+
+## Resume Line
+Developed PolyglotBench, a full-stack tokenization fairness observatory for multilingual LLMs with FastAPI, React, SQLAlchemy, Docker, tokenizer adapters, fairness metrics, exports, and leaderboard visualization.
+
+## Additional Docs
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- [docs/API_EXAMPLES.md](docs/API_EXAMPLES.md)
+- [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md)
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+- [docs/DATABASE.md](docs/DATABASE.md)
