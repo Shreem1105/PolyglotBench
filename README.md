@@ -17,8 +17,8 @@ This project is inspired by the paper "The Script Tax: Measuring Tokenization-Dr
 - Exportable analysis results for reporting and reproducibility
 
 ## 5. Planned Tech Stack
-- Backend: Python, FastAPI (planned), Pydantic
-- Frontend: React + TypeScript (planned)
+- Backend: Python, FastAPI, Pydantic
+- Frontend: React + TypeScript + Vite
 - Data/Storage: Lightweight file-based snapshots initially; database later
 - Visualization: Charting library for comparative metrics dashboards
 - Deployment: Containerized services (planned)
@@ -33,3 +33,24 @@ This project is inspired by the paper "The Script Tax: Measuring Tokenization-Dr
 
 ## 7. Latency Note
 For the MVP, latency is initially estimated from token inflation patterns and complexity proxies, not measured from live end-to-end model inference.
+
+## Run Locally
+
+### Backend (FastAPI)
+```powershell
+cd backend
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+### Frontend (React + Vite)
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+- Backend default URL: `http://localhost:8000`
+- Frontend runs on Vite's default local dev port (typically `http://localhost:5173`)

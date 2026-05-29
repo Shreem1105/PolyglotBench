@@ -1,0 +1,165 @@
+import { useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
+
+import { analyzeText, getModels } from "./api/client";
+import MetricCard from "./components/MetricCard";
+import ModelSelector from "./components/ModelSelector";
+import ResultsTable from "./components/ResultsTable";
+import TextInputPanel from "./components/TextInputPanel";
+import type { AnalyzeResponse, ModelInfo } from "./types/api";
+
+const DEFAULT_MODEL = "gpt-4o-mini";
+
+function chooseDefaultModel(models: ModelInfo[]): string {
+  if (models.some((model) => model.id === DEFAULT_MODEL)) {
+    return DEFAULT_MODEL;
+  }
+  return models[0]?.id ?? "";
+}
+
+export default function App() {
+  const [models, setModels] = useState<ModelInfo[]>([]);
+  const [modelsLoading, setModelsLoading] = useState(true);
+  const [modelsError, setModelsError] = useState<string | null>(null);
+
+  const [text, setText] = useState("Hello world. नमस्ते दुनिया। こんにちは世界。");
+  const [selectedModelIds, setSelectedModelIds] = useState<string[]>([]);
+  const [baselineModelId, setBaselineModelId] = useState("");
+
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analyzeError, setAnalyzeError] = useState<string | null>(null);
+  const [result, setResult] = useState<AnalyzeResponse | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadModels() {
+      setModelsLoading(true);
+      setModelsError(null);
+
+      try {
+        const response = await getModels();
+        if (cancelled) {
+          return;
+        }
+
+        setModels(response.models);
+        const defaultModel = chooseDefaultModel(response.models);
+        setSelectedModelIds(defaultModel ? [defaultModel] : []);
+        setBaselineModelId(defaultModel);
+      } catch (error) {
+        if (!cancelled) {
+          setModelsError(error instanceof Error ? error.message : "Failed to fetch models.");
+        }
+      } finally {
+        if (!cancelled) {
+          setModelsLoading(false);
+        }
+      }
+    }
+
+    loadModels();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  function toggleModel(modelId: string) {
+    setSelectedModelIds((current) => {
+      if (current.includes(modelId)) {
+        return current.filter((id) => id !== modelId);
+      }
+      return [...current, modelId];
+    });
+  }
+
+  async function handleAnalyze(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setAnalyzing(true);
+    setAnalyzeError(null);
+
+    try {
+      const response = await analyzeText({
+        text,
+        model_ids: selectedModelIds,
+        baseline_model_id: baselineModelId || null,
+      });
+      setResult(response);
+    } catch (error) {
+      setAnalyzeError(error instanceof Error ? error.message : "Analyze request failed.");
+      setResult(null);
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
+  const summary = useMemo(() => {
+    if (!result || result.analyses.length === 0) {
+      return null;
+    }
+
+    const fairnessValues = result.analyses.map((item) => item.fairness_score);
+    const multiplierValues = result.analyses.map((item) => item.token_multiplier);
+
+    return {
+      modelCount: result.analyses.length,
+      baseline: result.baseline_model_id,
+      lowestFairness: Math.min(...fairnessValues),
+      highestMultiplier: Math.max(...multiplierValues),
+    };
+  }, [result]);
+
+  return (
+    <div className="app-shell">
+      <header className="hero">
+        <h1>PolyglotBench</h1>
+        <p className="hero-subtitle">Live Tokenization Fairness Observatory</p>
+        <p className="hero-description">
+          Compare multilingual text across model tokenizers to estimate token inflation, cost, latency, and fairness disparities.
+        </p>
+      </header>
+
+      {modelsLoading && <div className="status-banner">Loading models from backend...</div>}
+      {modelsError && <div className="status-banner error">Backend connection error: {modelsError}</div>}
+
+      <main className="layout">
+        <form className="control-stack" onSubmit={handleAnalyze}>
+          <TextInputPanel text={text} onTextChange={setText} disabled={modelsLoading || analyzing} />
+          <ModelSelector
+            models={models}
+            selectedModelIds={selectedModelIds}
+            baselineModelId={baselineModelId}
+            onToggleModel={toggleModel}
+            onBaselineChange={setBaselineModelId}
+            disabled={modelsLoading || analyzing}
+          />
+          <button
+            className="analyze-button"
+            type="submit"
+            disabled={modelsLoading || analyzing || models.length === 0}
+          >
+            {analyzing ? "Analyzing..." : "Analyze Text"}
+          </button>
+          {analyzeError && <div className="status-banner error">{analyzeError}</div>}
+        </form>
+
+        <section className="results-panel">
+          <h2>Results</h2>
+          {!result && <p className="panel-hint">Run analysis to view model-by-model tokenization metrics.</p>}
+
+          {summary && (
+            <div className="metric-grid">
+              <MetricCard label="Models analyzed" value={String(summary.modelCount)} />
+              <MetricCard label="Baseline model" value={summary.baseline} />
+              <MetricCard label="Lowest fairness score" value={`${summary.lowestFairness.toFixed(2)} / 100`} />
+              <MetricCard label="Highest token multiplier" value={`${summary.highestMultiplier.toFixed(2)}×`} />
+            </div>
+          )}
+
+          {result && <ResultsTable analyses={result.analyses} />}
+        </section>
+      </main>
+    </div>
+  );
+}
