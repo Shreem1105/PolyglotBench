@@ -11,16 +11,33 @@
 
 ## Live Demo
 
-- [Launch PolyglotBench](https://polyglot-bench.vercel.app)
-- [Open FastAPI Docs](https://polyglotbench-api.onrender.com/docs)
+Public links are provided below for both the interactive observatory and the backend API documentation.
 
-Use the frontend link for the interactive dashboard and the FastAPI docs link for direct API testing.
+* [Launch PolyglotBench](https://polyglot-bench.vercel.app)
+* [Open FastAPI Docs](https://polyglotbench-api.onrender.com/docs)
 
 ## Research Motivation
-Multilingual language models are often treated as if they are script- and language-neutral.  
-In practice, tokenizer behavior can inflate sequence length for some scripts compared with others.  
-That inflation can create downstream disparities in cost, latency proxies, and accessibility.  
-PolyglotBench turns this research direction into an interactive observatory for measuring and communicating these differences.
+Large language models are often expected to work equally well across different languages and writing systems. However, the way text is tokenized can vary significantly from one language to another.
+
+Some languages require more tokens to represent the same information, which can increase cost, latency, and overall model efficiency differences. These effects are often hidden from users and developers.
+
+PolyglotBench was created to make these differences visible through an interactive observatory that allows users to compare tokenizer behavior across languages and models.
+
+## Research Origin
+PolyglotBench was inspired by research on tokenization-driven disparities in multilingual language models. The project extends ideas explored in a published research paper accepted to the EACL 2026 LoResLM Workshop.
+
+The research investigates how different writing systems can experience significantly different tokenization efficiency, resulting in measurable differences in cost, latency, and accessibility when interacting with modern language models.
+
+This observatory was built to transform those research findings into an interactive tool that researchers, students, and developers can use to explore tokenization fairness in practice.
+
+### Research Links
+Google Scholar:
+
+https://scholar.google.com/citations?view_op=view_citation&hl=en&user=sRBI_S4AAAAJ&citation_for_view=sRBI_S4AAAAJ:u-x6o8ySG0sC
+
+Research Paper PDF:
+
+(PDF link coming soon)
 
 ## Key Features
 - Real-time tokenizer comparison
@@ -173,9 +190,6 @@ MVP complete. Deployment and production hardening in progress.
 
 ## Research Attribution
 This project is inspired by the Script Tax research direction on tokenization-driven disparities in multilingual language models.
-
-## Resume Line
-Developed PolyglotBench, a full-stack tokenization fairness observatory for multilingual LLMs with FastAPI, React, SQLAlchemy, Docker, tokenizer adapters, fairness metrics, exports, and leaderboard visualization.
 
 ## Additional Docs
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
