@@ -34,6 +34,27 @@ This project is inspired by the paper "The Script Tax: Measuring Tokenization-Dr
 ## 7. Latency Note
 For the MVP, latency is initially estimated from token inflation patterns and complexity proxies, not measured from live end-to-end model inference.
 
+## Environment Setup
+
+### Backend env
+- Copy `backend/.env.example` if you want custom local values.
+- `DATABASE_URL` defaults to `sqlite:///./polyglotbench.db`.
+
+### Frontend env
+- `frontend/.env.example` includes `VITE_API_BASE_URL=http://localhost:8000`.
+
+## Docker Quickstart
+
+```powershell
+docker compose up --build
+```
+
+- Backend: `http://localhost:8000`
+- Frontend: `http://localhost:5173`
+
+## Deployment Docs
+- See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for local, Docker, and production deployment guidance.
+
 ## Frontend Features
 - model selector
 - baseline selector
