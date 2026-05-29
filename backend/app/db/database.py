@@ -1,10 +1,9 @@
-﻿import os
 from collections.abc import Generator
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./polyglotbench.db")
+from app.core.config import DATABASE_URL
 
 engine_kwargs: dict[str, object] = {}
 if DATABASE_URL.startswith("sqlite"):

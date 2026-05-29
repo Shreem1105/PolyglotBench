@@ -1,4 +1,4 @@
-﻿# PolyglotBench
+# PolyglotBench
 
 ## 1. Project Title
 PolyglotBench
@@ -38,6 +38,7 @@ For the MVP, latency is initially estimated from token inflation patterns and co
 
 ### Backend env
 - Copy `backend/.env.example` if you want custom local values.
+- Runtime config is environment-based (`ENVIRONMENT`, `DATABASE_URL`, `DEFAULT_BASELINE_MODEL`, `CORS_ORIGINS`).
 - `DATABASE_URL` defaults to `sqlite:///./polyglotbench.db`.
 
 ### Frontend env
@@ -54,6 +55,11 @@ docker compose up --build
 
 ## Deployment Docs
 - See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for local, Docker, and production deployment guidance.
+
+## Backend Operations
+- `GET /health` for liveness checks.
+- `GET /ready` for readiness checks with database connectivity verification.
+- CORS support is enabled for frontend dev origins (configurable via `CORS_ORIGINS`).
 
 ## Frontend Features
 - model selector

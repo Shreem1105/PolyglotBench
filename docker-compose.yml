@@ -1,4 +1,4 @@
-﻿version: "3.9"
+version: "3.9"
 
 services:
   backend:
@@ -6,7 +6,10 @@ services:
     ports:
       - "8000:8000"
     environment:
+      ENVIRONMENT: docker
       DATABASE_URL: sqlite:///./data/polyglotbench.db
+      DEFAULT_BASELINE_MODEL: gpt-4o-mini
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000
     volumes:
       - ./backend/data:/app/data
 
